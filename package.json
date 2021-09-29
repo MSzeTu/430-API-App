@@ -1,0 +1,26 @@
+{
+  "name": "http-api-assignment-ii",
+  "version": "1.0.0",
+  "description": "HTTP Assignment ii",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests Complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MSzeTu/http-api-assignment-ii.git"
+  },
+  "author": "Matthew Sze-Tu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MSzeTu/http-api-assignment-ii/issues"
+  },
+  "homepage": "https://github.com/MSzeTu/http-api-assignment-ii#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.24.2"
+  }
+}
