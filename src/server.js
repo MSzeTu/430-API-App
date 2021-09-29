@@ -7,7 +7,7 @@ const jsonHandler = require('./jsonResponses.js');
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const handlePost = (request, response, parsedUrl) => {
-  if (parsedUrl.pathname === '/addUser') {
+  if (parsedUrl.pathname === '/addEvent') {
     const body = [];
 
     request.on('error', (err) => {
@@ -24,7 +24,7 @@ const handlePost = (request, response, parsedUrl) => {
       const bodyString = Buffer.concat(body).toString();
       const bodyParams = query.parse(bodyString);
 
-      //jsonHandler.addUser(request, response, bodyParams);
+      jsonHandler.addEvent(request, response, bodyParams);
     });
   }
 };

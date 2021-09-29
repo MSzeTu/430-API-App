@@ -9,7 +9,7 @@
   <script type="text/babel">
 
     let guests = 0; //Variable to track the number of guests
-
+    let guestList = [];
 
     //Handles requests
     const handleResponse = (xhr, parseResponse) => {
@@ -76,18 +76,24 @@
     }
 
     //Function for Post Requests
-    const sendPost = (e, nameForm) => {
-      /*const nameAction = nameForm.getAttribute('action');
+    const sendPost = (e, nameForm, guests, guestList) => {
+      //Set up the guestList
+      for(let i=0; i <= guests; i++)
+      {
+        let value = document.querySelector('#nameForm').querySelector(`#guest${i}`).value;
+        guestList.push(value);
+      }
+
+      const nameAction = nameForm.getAttribute('action');
       const nameMethod = nameForm.getAttribute('method');
-      
-      These will all be changed
+
 
       const nameField = nameForm.querySelector('#nameField');
-      const ageField = nameForm.querySelector('#ageField'); */
+      const ageField = nameForm.querySelector('#ageField'); 
 
       //Create Ajax request
       const xhr = new XMLHttpRequest();
-
+      
       //Sets ethod and url
       xhr.open(nameMethod, nameAction);
 
@@ -97,9 +103,8 @@
       xhr.onload = () => handleResponse(xhr, true);
 
 
-
-      const formData = `name=${nameField.value}&age=${ageField.value}`;
-
+      const formData = `name=${nameField.value}&date=${dateField.value}&guestNum=${guests}&guestList=${guestList}`;
+      console.log(formData);
       xhr.send(formData);
 
       e.preventDefault();
@@ -140,8 +145,8 @@
     const init = () => { //Initializes the page
       const nameForm = document.querySelector('#nameForm');
 
-      //Create handler for addUser
-      const addUser = (e) => sendPost(e, nameForm);
+      //Create handler for addEvent
+      const addEvent = (e) => sendPost(e, nameForm, guests, guestList);
       
 
       //Sets up the button functionality
@@ -151,7 +156,7 @@
       removeButton.addEventListener("click", remove);
 
 
-      nameForm.addEventListener('submit', addUser);
+      nameForm.addEventListener('submit', addEvent);
 
       //Create handler for getUser
       const userForm = document.querySelector('#userForm');
@@ -165,7 +170,7 @@
 <body>
   <section id="top">
     <h3>Event and Guest Tracker</h3>
-    <form id="nameForm" action="/addUser" method="post">
+    <form id="nameForm" action="/addEvent" method="post">
       <label for="eventName">Event Name: </label>
       <input id="nameField" type="text" name="eventName" />
       <label for="eventDate">Event Date: </label>
@@ -174,7 +179,7 @@
       <br>
       <label for="guests">Guests: </label>
       <br>
-      <input type="text" name="guest0">
+      <input type="text" name="guest0" id="guest0">
     </form>
     <button id="addButton">Add Guest</button>
     <button id="removeButton">Remove Guest</button>
