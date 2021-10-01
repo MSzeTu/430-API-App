@@ -30,10 +30,13 @@ const handlePost = (request, response, parsedUrl) => {
 };
 
 const handleGet = (request, response, parsedUrl) => {
+  const params = query.parse(parsedUrl.query);
   if (parsedUrl.pathname === '/') {
     htmlHandler.getIndex(request, response);
   } else if (parsedUrl.pathname === '/style.css') {
     htmlHandler.getCSS(request, response);
+  } else if (parsedUrl.pathname === '/getEvents') {
+    jsonHandler.getEvent(request, response, params);
   } else {
     jsonHandler.notReal(request, response);
   }

@@ -14,11 +14,10 @@ const respondJSONMeta = (request, response, status) => {
 };
 
 // returns all Events. CHANGE TO TAKE PARAMETERS
-const getEvent = (request, response) => {
+const getEvent = (request, response, params) => {
   const responseJSON = {
     events,
   };
-  
 
   respondJSON(request, response, 200, responseJSON);
 };
@@ -43,9 +42,10 @@ const addEvent = (request, response, body) => {
     "date" : body.date,
     "guests" : [] 
   }
+  let guestList = body.guestList.split(','); //Split the string of guestList into an array
   for(let i=0; i <= body.guestNum; i++)
   {
-    events[body.name].guests.push(body.guestList[i]);
+    events[body.name].guests.push(guestList[i]); //Push the array into the Events array
   }
   return respondJSON(request, response, responseCode, responseJSON);
 };
