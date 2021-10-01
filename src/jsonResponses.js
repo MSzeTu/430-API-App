@@ -18,7 +18,11 @@ const getEvent = (request, response, params) => {
   const responseJSON = {
     events,
   };
-
+  let paramsname = 'testEvent';
+  if(paramsname in events)
+  {
+    console.log('found event');
+  }
   respondJSON(request, response, 200, responseJSON);
 };
 
@@ -35,17 +39,20 @@ const addEvent = (request, response, body) => {
   }
 
   let responseCode = 201;
-
+  responseJSON.message = "Event created";
   //For now, only create objects
   events[body.name] = {
     "name" : body.name,
     "date" : body.date,
-    "guests" : [] 
+    "guests" : [],
+    "rsvpd" : [] 
   }
   let guestList = body.guestList.split(','); //Split the string of guestList into an array
+  let rsvpList = body.rsvp.split(','); //Split the string of guestList into an array
   for(let i=0; i <= body.guestNum; i++)
   {
     events[body.name].guests.push(guestList[i]); //Push the array into the Events array
+    events[body.name].rsvpd.push(rsvpList[i]); //Push the array into the Events array
   }
   return respondJSON(request, response, responseCode, responseJSON);
 };

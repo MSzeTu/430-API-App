@@ -10,6 +10,7 @@
 
     let guests = 0; //Variable to track the number of guests
     let guestList = [];
+    let rsvpList = [];
 
     //Handles requests
     const handleResponse = (xhr, parseResponse) => {
@@ -82,6 +83,9 @@
       {
         let value = document.querySelector('#nameForm').querySelector(`#guest${i}`).value;
         guestList.push(value);
+
+        let rsvpValue = value = document.querySelector('#nameForm').querySelector(`#rsvp${i}`).checked;
+        rsvpList.push(rsvpValue);
       }
 
       const nameAction = nameForm.getAttribute('action');
@@ -89,7 +93,7 @@
 
 
       const nameField = nameForm.querySelector('#nameField');
-      const ageField = nameForm.querySelector('#ageField'); 
+      const dateField = nameForm.querySelector('#dateField'); 
 
       //Create Ajax request
       const xhr = new XMLHttpRequest();
@@ -103,10 +107,17 @@
       xhr.onload = () => handleResponse(xhr, true);
 
 
-      const formData = `name=${nameField.value}&date=${dateField.value}&guestNum=${guests}&guestList=${guestList}`;
+      const formData = `name=${nameField.value}&date=${dateField.value}&guestNum=${guests}&guestList=${guestList}&rsvp=${rsvpList}`;
       console.log(formData);
       xhr.send(formData);
 
+      //Add the event to the list of existing events
+      let events = document.querySelector('#eventField');
+      let option = document.createElement('OPTION');
+      option.innerHTML = nameField.value;
+      option.value = nameField.value;
+      events.options.add(option);
+      
       e.preventDefault();
       return false; //Prevents page change
     };
@@ -114,12 +125,20 @@
 
     const add = () => { //Adds a guest input slot
       guests++;
+      //Append guest list
       let nameForm = document.querySelector("#nameForm");
       let input = document.createElement("input");
       input.setAttribute('type', 'text');
       input.setAttribute('id', `guest${guests}`);
       input.setAttribute('name', `guest${guests}`);
       nameForm.appendChild(document.createElement("br"));
+      nameForm.appendChild(input);
+
+      //Append Checkbox for RSVP
+      input = document.createElement("input");
+      input.setAttribute('type', 'checkbox');
+      input.setAttribute('id', `rsvp${guests}`);
+      input.setAttribute('name', `rsvp${guests}`);
       nameForm.appendChild(input);
     }
 
@@ -135,6 +154,9 @@
       nameForm.removeChild(breaks[breaks.length-1]);
 
       let removeNode = nameForm.querySelector(`#guest${guests}`);
+      nameForm.removeChild(removeNode);
+
+      removeNode = nameForm.querySelector(`#rsvp${guests}`);
       nameForm.removeChild(removeNode);
 
       guests--;
@@ -158,9 +180,9 @@
       nameForm.addEventListener('submit', addEvent);
 
       //Create handler for getUser
-      const userForm = document.querySelector('#userForm');
-      const getUsers = (e) => getRequest(e, userForm);
-      userForm.addEventListener('submit', getUsers);
+      const userForm = document.querySelector('#eventForm');
+      const getEvent = (e) => getRequest(e, userForm);
+      userForm.addEventListener('submit', getEvent);
     }
     window.onload = init;
   </script>
@@ -176,22 +198,22 @@
       <input id="dateField" type="date" name="date" />
       <input type="submit" value="Add User" />
       <br>
-      <label for="guests">Guests: </label>
+      <label for="guests">Guests:</label>
+      &emsp;&emsp;&emsp;
+      <label for="rsvp">RSVP'd?:</label>
       <br>
       <input type="text" name="guest0" id="guest0">
+      <input type="checkbox" name="rsvp0" id="rsvp0">
     </form>
     <button id="addButton">Add Guest</button>
     <button id="removeButton">Remove Guest</button>
-    <form id="userForm" action="/getUsers" method="get">
-      <select id='urlField'>
-        <option value='/getUsers'>/getUsers</option>
-        <option value='/notReal'>/notReal</option>
+
+    <h3>Retrieve Events Here</h3>
+    <form id="eventForm" action="/getEvent" method="get">
+      <select id='eventField'>
+        <option value='/getEvent'>Event Name</option>
       </select>
-      <select id="methodSelect">
-        <option value="get">GET</option>
-        <option value="head">HEAD</option>
-      </select>
-      <input type="submit" value="Get User" />
+      <input type="submit" value="Get Event" />
     </form>
   </section>
   <section id="content">

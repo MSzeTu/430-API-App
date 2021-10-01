@@ -35,7 +35,7 @@ const handleGet = (request, response, parsedUrl) => {
     htmlHandler.getIndex(request, response);
   } else if (parsedUrl.pathname === '/style.css') {
     htmlHandler.getCSS(request, response);
-  } else if (parsedUrl.pathname === '/getEvents') {
+  } else if (parsedUrl.pathname === '/getEvent') {
     jsonHandler.getEvent(request, response, params);
   } else {
     jsonHandler.notReal(request, response);
