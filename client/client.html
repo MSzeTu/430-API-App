@@ -45,16 +45,22 @@
     //Parses the JSON when called
     const parseJSON = (xhr, content) => {
       const obj = JSON.parse(xhr.response);
-
+      
       return obj;
     };
 
     //Function for Get Requests. Might need to be changed? Will at least edit method use
     const getRequest = (e, userForm) => {
       //Grab url
-      const url = userForm.querySelector('#urlField').value;
+      let url = userForm.getAttribute('action');
+
+      //Build the URL as necessary
+      let selection = document.querySelector('#eventField');
+      let name = selection.options[selection.selectedIndex].value;
+      url += `?name=${name}`;
+      
       //Grab method
-      const method = userForm.querySelector('#methodSelect').value;
+      const method = eventForm.getAttribute('method');
 
       //Create Ajax request
       const xhr = new XMLHttpRequest();
@@ -67,7 +73,8 @@
       } else {
         xhr.onload = () => handleResponse(xhr, false);
       }
-
+      
+      
       //send ajax request
       xhr.send();
 
@@ -118,6 +125,9 @@
       option.value = nameField.value;
       events.options.add(option);
       
+      guestList.splice(0, guestList.length);
+      rsvpList.splice(0, rsvpList.length);
+
       e.preventDefault();
       return false; //Prevents page change
     };

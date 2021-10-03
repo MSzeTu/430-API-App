@@ -16,14 +16,21 @@ const respondJSONMeta = (request, response, status) => {
 // returns all Events. CHANGE TO TAKE PARAMETERS
 const getEvent = (request, response, params) => {
   const responseJSON = {
-    events,
+
   };
-  let paramsname = 'testEvent';
-  if(paramsname in events)
+  console.log(params);
+  if(!params.name)
   {
-    console.log('found event');
+    responseJSON.id = 'notFound'
+    responseJSON.message = 'Event does not exist';
+    return respondJSON(request, response, 400, responseJSON);
   }
-  respondJSON(request, response, 200, responseJSON);
+  if(params.name in events)
+  {
+    let responseJSON = events[params.name];
+    return respondJSON(request, response, 200, responseJSON);
+  }
+  return respondJSON(request, response, 200, responseJSON);
 };
 
 // Adds an event with a date, binds the guest list to it. Change to allow for Head Requests

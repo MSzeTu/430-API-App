@@ -29,13 +29,14 @@ const handlePost = (request, response, parsedUrl) => {
   }
 };
 
+//Handles Get Functions
 const handleGet = (request, response, parsedUrl) => {
   const params = query.parse(parsedUrl.query);
   if (parsedUrl.pathname === '/') {
     htmlHandler.getIndex(request, response);
   } else if (parsedUrl.pathname === '/style.css') {
     htmlHandler.getCSS(request, response);
-  } else if (parsedUrl.pathname === '/getEvent') {
+  } else if (parsedUrl.pathname === '/getEvent') { 
     jsonHandler.getEvent(request, response, params);
   } else {
     jsonHandler.notReal(request, response);
@@ -43,12 +44,13 @@ const handleGet = (request, response, parsedUrl) => {
 };
 
 const onRequest = (request, response) => {
-  const parsedUrl = url.parse(request.url);
+  const parsedUrl = url.parse(request.url); //Parse the url
 
   if (request.method === 'POST') {
-    handlePost(request, response, parsedUrl);
+    handlePost(request, response, parsedUrl); //Post Method
   } else {
-    handleGet(request, response, parsedUrl);
+    console.log(parsedUrl);
+    handleGet(request, response, parsedUrl); //Get Method
   }
 };
 
