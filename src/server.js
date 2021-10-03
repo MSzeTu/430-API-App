@@ -45,11 +45,10 @@ const handleGet = (request, response, parsedUrl) => {
 
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url); //Parse the url
-
+  
   if (request.method === 'POST') {
     handlePost(request, response, parsedUrl); //Post Method
   } else {
-    console.log(parsedUrl);
     handleGet(request, response, parsedUrl); //Get Method
   }
 };

@@ -18,8 +18,7 @@ const getEvent = (request, response, params) => {
   const responseJSON = {
 
   };
-  console.log(params);
-  if(!params.name)
+  if(!(params.name in events))
   {
     responseJSON.id = 'notFound'
     responseJSON.message = 'Event does not exist';
@@ -38,10 +37,8 @@ const addEvent = (request, response, body) => {
   const responseJSON = {
     message: 'You must have an event name and date.'
   };
-  console.dir(body);
   if(!body.name || !body.date) {
     responseJSON.id = 'missingParams';
-    console.log("missingParams");
     return respondJSON(request, response, 400, responseJSON);
   }
 

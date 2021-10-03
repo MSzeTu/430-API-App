@@ -15,41 +15,47 @@
     //Handles requests
     const handleResponse = (xhr, parseResponse) => {
       const content = document.querySelector('#content'); //Access the HTML content
-
-      switch (xhr.status) { //Act based on status code. This will likely not be needed
+      let obj = '';
+      switch (xhr.status) { //Act based on status code.
         case 200: //if success
-          content.innerHTML = `<b>Success</b>`;
+          obj = parseJSON(xhr, content)
+          console.log(obj);
+          content.innerHTML = `<b>${obj.name}</b>`;
+          genTable(obj.guests, obj.rsvpd);
           break;
         case 201: //if created
-          content.innerHTML = `<b>User Created</b>`;
+          content.innerHTML = `<b>Event has been Created</b>`;
           break;
         case 204: //if already exists
           content.innerHTML = `<b>Updated (No Content)</b>`;
           parseResponse = false; //Do not parse this was a HEAD.
           break;
         case 400: //Bad request
-          content.innerHTML = `<b>Bad Request</b>`;
+          obj = parseJSON(xhr, content)
+          //Print json to console
+          content.innerHTML = `<b>${obj.message}</b>`; 
           break;
         case 404:
           content.innerHTML = `<b>Page Not Found</b>`;
           break;
       }
 
-      if (parseResponse) { //Only Parse non-Heads
+      /*if (parseResponse) { //Only Parse non-Heads
         const obj = parseJSON(xhr, content)
         //Print json to console
         console.dir(obj);
-      }
+        content.innerHTML = obj.message;
+      } */
     };
 
     //Parses the JSON when called
     const parseJSON = (xhr, content) => {
       const obj = JSON.parse(xhr.response);
-      
+
       return obj;
     };
 
-    //Function for Get Requests. Might need to be changed? Will at least edit method use
+    //Function for Get Requests. 
     const getRequest = (e, userForm) => {
       //Grab url
       let url = userForm.getAttribute('action');
@@ -58,7 +64,7 @@
       let selection = document.querySelector('#eventField');
       let name = selection.options[selection.selectedIndex].value;
       url += `?name=${name}`;
-      
+
       //Grab method
       const method = eventForm.getAttribute('method');
 
@@ -73,8 +79,8 @@
       } else {
         xhr.onload = () => handleResponse(xhr, false);
       }
-      
-      
+
+
       //send ajax request
       xhr.send();
 
@@ -86,8 +92,7 @@
     //Function for Post Requests
     const sendPost = (e, nameForm, guests, guestList) => {
       //Set up the guestList
-      for(let i=0; i <= guests; i++)
-      {
+      for (let i = 0; i <= guests; i++) {
         let value = document.querySelector('#nameForm').querySelector(`#guest${i}`).value;
         guestList.push(value);
 
@@ -100,11 +105,11 @@
 
 
       const nameField = nameForm.querySelector('#nameField');
-      const dateField = nameForm.querySelector('#dateField'); 
+      const dateField = nameForm.querySelector('#dateField');
 
       //Create Ajax request
       const xhr = new XMLHttpRequest();
-      
+
       //Sets ethod and url
       xhr.open(nameMethod, nameAction);
 
@@ -124,7 +129,7 @@
       option.innerHTML = nameField.value;
       option.value = nameField.value;
       events.options.add(option);
-      
+
       guestList.splice(0, guestList.length);
       rsvpList.splice(0, rsvpList.length);
 
@@ -152,16 +157,15 @@
       nameForm.appendChild(input);
     }
 
-    const remove = () =>{ //Removes a guest input slot
-      if(guests === 0)
-      {
+    const remove = () => { //Removes a guest input slot
+      if (guests === 0) {
         return;
       }
-      
+
       let nameForm = document.querySelector("#nameForm");
 
       let breaks = document.getElementsByTagName("br");
-      nameForm.removeChild(breaks[breaks.length-1]);
+      nameForm.removeChild(breaks[breaks.length - 1]);
 
       let removeNode = nameForm.querySelector(`#guest${guests}`);
       nameForm.removeChild(removeNode);
@@ -173,12 +177,62 @@
 
     }
 
+    //Makes an event Table and puts it in content
+    const genTable = (guests, rsvpd) => {
+      let body = document.querySelector('#content');
+
+      //Create a table element and tbody element
+      let tbl = document.createElement("table");
+      let tblBody = document.createElement('tbody');
+
+      //Create the label cells
+      let row = document.createElement('tr');
+      let cell = document.createElement('td');
+      let cellText = document.createElement('b');
+      cellText.innerHTML = 'Guests';
+      cell.appendChild(cellText);
+      row.appendChild(cell);
+      
+      cell = document.createElement('td');
+      cellText = document.createElement('b');
+      cellText.innerHTML = `RSVP'd`;
+      cell.appendChild(cellText);
+      row.appendChild(cell);
+
+      tblBody.appendChild(row);
+      //Populate the rest of the cells
+      for (let i = 0; i < guests.length; i++) {
+        row = document.createElement('tr');
+        cell = document.createElement('td');
+        cellText = document.createTextNode(guests[i]);
+        cell.appendChild(cellText);
+        row.appendChild(cell);
+
+        cell = document.createElement('td');
+        if(rsvpd[i] === `true`)
+        {
+          cellText = document.createTextNode(`Yes`);
+        }else{
+          cellText = document.createTextNode(`No`);
+        }
+        
+        cell.appendChild(cellText);
+        row.appendChild(cell);
+
+        tblBody.appendChild(row);
+      }
+
+      tbl.appendChild(tblBody);
+      body.appendChild(tbl);
+      tbl.setAttribute('border', 2);
+    }
+
     const init = () => { //Initializes the page
       const nameForm = document.querySelector('#nameForm');
 
       //Create handler for addEvent
       const addEvent = (e) => sendPost(e, nameForm, guests, guestList);
-      
+
 
       //Sets up the button functionality
       const addButton = document.querySelector('#addButton');
