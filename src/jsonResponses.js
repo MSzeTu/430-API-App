@@ -8,25 +8,23 @@ const respondJSON = (request, response, status, object) => {
 };
 
 // Returns without JSON Body, takes request response and status.
-const respondJSONMeta = (request, response, status) => {
+/* const respondJSONMeta = (request, response, status) => {
   response.writeHead(status, { 'Content-Type': 'application/json' });
   response.end();
-};
+}; */
 
 // returns all Events. CHANGE TO TAKE PARAMETERS
 const getEvent = (request, response, params) => {
-  const responseJSON = {
+  let responseJSON = {
 
   };
-  if(!(params.name in events))
-  {
-    responseJSON.id = 'notFound'
+  if (!(params.name in events)) {
+    responseJSON.id = 'notFound';
     responseJSON.message = 'Event does not exist';
     return respondJSON(request, response, 400, responseJSON);
   }
-  if(params.name in events)
-  {
-    let responseJSON = events[params.name];
+  if (params.name in events) {
+    responseJSON = events[params.name];
     return respondJSON(request, response, 200, responseJSON);
   }
   return respondJSON(request, response, 200, responseJSON);
@@ -35,28 +33,27 @@ const getEvent = (request, response, params) => {
 // Adds an event with a date, binds the guest list to it. Change to allow for Head Requests
 const addEvent = (request, response, body) => {
   const responseJSON = {
-    message: 'You must have an event name and date.'
+    message: 'You must have an event name and date.',
   };
-  if(!body.name || !body.date) {
+  if (!body.name || !body.date) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  let responseCode = 201;
-  responseJSON.message = "Event created";
-  //For now, only create objects
+  const responseCode = 201;
+  responseJSON.message = 'Event created';
+  // For now, only create objects
   events[body.name] = {
-    "name" : body.name,
-    "date" : body.date,
-    "guests" : [],
-    "rsvpd" : [] 
-  }
-  let guestList = body.guestList.split(','); //Split the string of guestList into an array
-  let rsvpList = body.rsvp.split(','); //Split the string of guestList into an array
-  for(let i=0; i <= body.guestNum; i++)
-  {
-    events[body.name].guests.push(guestList[i]); //Push the array into the Events array
-    events[body.name].rsvpd.push(rsvpList[i]); //Push the array into the Events array
+    name: body.name,
+    date: body.date,
+    guests: [],
+    rsvpd: [],
+  };
+  const guestList = body.guestList.split(','); // Split the string of guestList into an array
+  const rsvpList = body.rsvp.split(','); // Split the string of guestList into an array
+  for (let i = 0; i <= body.guestNum; i++) {
+    events[body.name].guests.push(guestList[i]); // Push the array into the Events array
+    events[body.name].rsvpd.push(rsvpList[i]); // Push the array into the Events array
   }
   return respondJSON(request, response, responseCode, responseJSON);
 };
