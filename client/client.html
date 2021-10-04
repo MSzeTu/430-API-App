@@ -20,10 +20,16 @@
         case 200: //if success
           obj = parseJSON(xhr, content)
           console.log(obj);
-          content.innerHTML = `<b>${obj.name}</b>`;
+          content.innerHTML = `<b>${obj.name} on ${obj.date}</b>`;
           genTable(obj.guests, obj.rsvpd);
           break;
-        case 201: //if created
+        case 201: //if created, add it to the list
+          //Add the event to the list of existing events
+          let events = document.querySelector('#eventField');
+          let option = document.createElement('OPTION');
+          option.innerHTML = document.querySelector('#nameField').value;
+          option.value = document.querySelector('#nameField').value;
+          events.options.add(option);
           content.innerHTML = `<b>Event has been Created</b>`;
           break;
         case 204: //if already exists
@@ -33,7 +39,7 @@
         case 400: //Bad request
           obj = parseJSON(xhr, content)
           //Print json to console
-          content.innerHTML = `<b>${obj.message}</b>`; 
+          content.innerHTML = `<b>${obj.message}</b>`;
           break;
         case 404:
           content.innerHTML = `<b>Page Not Found</b>`;
@@ -56,9 +62,9 @@
     };
 
     //Function for Get Requests. 
-    const getRequest = (e, userForm) => {
+    const getRequest = (e, eventForm) => {
       //Grab url
-      let url = userForm.getAttribute('action');
+      let url = eventForm.getAttribute('action');
 
       //Build the URL as necessary
       let selection = document.querySelector('#eventField');
@@ -74,11 +80,8 @@
       xhr.setRequestHeader('Accept', 'application.json');
 
       //if get or head
-      if (method == 'get') {
-        xhr.onload = () => handleResponse(xhr, true);
-      } else {
-        xhr.onload = () => handleResponse(xhr, false);
-      }
+      xhr.onload = () => handleResponse(xhr, true);
+
 
 
       //send ajax request
@@ -122,13 +125,6 @@
       const formData = `name=${nameField.value}&date=${dateField.value}&guestNum=${guests}&guestList=${guestList}&rsvp=${rsvpList}`;
       console.log(formData);
       xhr.send(formData);
-
-      //Add the event to the list of existing events
-      let events = document.querySelector('#eventField');
-      let option = document.createElement('OPTION');
-      option.innerHTML = nameField.value;
-      option.value = nameField.value;
-      events.options.add(option);
 
       guestList.splice(0, guestList.length);
       rsvpList.splice(0, rsvpList.length);
@@ -192,7 +188,7 @@
       cellText.innerHTML = 'Guests';
       cell.appendChild(cellText);
       row.appendChild(cell);
-      
+
       cell = document.createElement('td');
       cellText = document.createElement('b');
       cellText.innerHTML = `RSVP'd`;
@@ -209,13 +205,12 @@
         row.appendChild(cell);
 
         cell = document.createElement('td');
-        if(rsvpd[i] === `true`)
-        {
+        if (rsvpd[i] === `true`) {
           cellText = document.createTextNode(`Yes`);
-        }else{
+        } else {
           cellText = document.createTextNode(`No`);
         }
-        
+
         cell.appendChild(cellText);
         row.appendChild(cell);
 
@@ -243,10 +238,10 @@
 
       nameForm.addEventListener('submit', addEvent);
 
-      //Create handler for getUser
-      const userForm = document.querySelector('#eventForm');
-      const getEvent = (e) => getRequest(e, userForm);
-      userForm.addEventListener('submit', getEvent);
+      //Create handler for getEvent
+      const eventForm = document.querySelector('#eventForm');
+      const getEvent = (e) => getRequest(e, eventForm);
+      eventForm.addEventListener('submit', getEvent);
     }
     window.onload = init;
   </script>
@@ -260,7 +255,7 @@
       <input id="nameField" type="text" name="eventName" />
       <label for="eventDate">Event Date: </label>
       <input id="dateField" type="date" name="date" />
-      <input type="submit" value="Add User" />
+      <input type="submit" value="Add Event" />
       <br>
       <label for="guests">Guests:</label>
       &emsp;&emsp;&emsp;

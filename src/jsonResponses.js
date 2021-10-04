@@ -8,10 +8,11 @@ const respondJSON = (request, response, status, object) => {
 };
 
 // Returns without JSON Body, takes request response and status.
-/* const respondJSONMeta = (request, response, status) => {
+const respondJSONMeta = (request, response, status) => {
+  console.dir("meta working");
   response.writeHead(status, { 'Content-Type': 'application/json' });
   response.end();
-}; */
+};
 
 // returns all Events. CHANGE TO TAKE PARAMETERS
 const getEvent = (request, response, params) => {
@@ -28,6 +29,11 @@ const getEvent = (request, response, params) => {
     return respondJSON(request, response, 200, responseJSON);
   }
   return respondJSON(request, response, 200, responseJSON);
+};
+
+//Gets meta information about event. 
+const getEventMeta = (request, response) => {
+  return respondJSONMeta(request, response, 200);
 };
 
 // Adds an event with a date, binds the guest list to it. Change to allow for Head Requests
@@ -68,8 +74,16 @@ const notReal = (request, response) => {
   return respondJSON(request, response, responseCode, responseJSON);
 };
 
+//Head request for nonexistent pages
+const notRealMeta = (request, response) => {
+  //return 404 with no message
+  respondJSONMeta(request, response, 404);
+};
+
 module.exports = {
   getEvent,
   addEvent,
   notReal,
+  getEventMeta,
+  notRealMeta
 };

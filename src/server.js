@@ -43,13 +43,25 @@ const handleGet = (request, response, parsedUrl) => {
   }
 };
 
+//Handles Head Functions
+const handleHead = (request, response, parsedUrl) => {
+  if (parsedUrl.pathname === '/getEvent') {
+    jsonHandler.getEventMeta(request, response);
+  } else {
+    jsonHandler.notRealMeta(request, response);
+  }
+};
+
+//Runs all requests
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url); // Parse the url
 
   if (request.method === 'POST') {
     handlePost(request, response, parsedUrl); // Post Method
-  } else {
+  } else if (request.method === 'GET') {
     handleGet(request, response, parsedUrl); // Get Method
+  } else {
+    handleHead(request, response, parsedUrl); //Head Method
   }
 };
 
