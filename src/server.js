@@ -7,10 +7,9 @@ const jsonHandler = require('./jsonResponses.js');
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const handlePost = (request, response, parsedUrl) => {
-
   const body = [];
 
-  request.on('error', (err) => {
+  request.on('error', () => {
     response.statusCode = 400;
     response.end();
   });
@@ -46,7 +45,7 @@ const handleGet = (request, response, parsedUrl) => {
   }
 };
 
-//Handles Head Functions
+// Handles Head Functions
 const handleHead = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/getEvent') {
     jsonHandler.getEventMeta(request, response);
@@ -55,7 +54,7 @@ const handleHead = (request, response, parsedUrl) => {
   }
 };
 
-//Runs all requests
+// Runs all requests
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url); // Parse the url
 
@@ -64,7 +63,7 @@ const onRequest = (request, response) => {
   } else if (request.method === 'GET') {
     handleGet(request, response, parsedUrl); // Get Method
   } else {
-    handleHead(request, response, parsedUrl); //Head Method
+    handleHead(request, response, parsedUrl); // Head Method
   }
 };
 
