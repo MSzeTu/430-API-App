@@ -9,23 +9,22 @@ const respondJSON = (request, response, status, object) => {
 
 // Returns without JSON Body, takes request response and status.
 const respondJSONMeta = (request, response, status) => {
-  console.dir("meta working");
   response.writeHead(status, { 'Content-Type': 'application/json' });
   response.end();
 };
 
-// returns all Events. CHANGE TO TAKE PARAMETERS
-const getEvent = (request, response, params) => {
+// returns an Events
+const getEvent = (request, response, body) => {
   let responseJSON = {
 
   };
-  if (!(params.name in events)) {
+  if (!(body.name in events)) {
     responseJSON.id = 'notFound';
     responseJSON.message = 'Event does not exist';
     return respondJSON(request, response, 400, responseJSON);
   }
-  if (params.name in events) {
-    responseJSON = events[params.name];
+  if (body.name in events) {
+    responseJSON = events[body.name];
     return respondJSON(request, response, 200, responseJSON);
   }
   return respondJSON(request, response, 200, responseJSON);
@@ -33,7 +32,16 @@ const getEvent = (request, response, params) => {
 
 //Gets meta information about event. 
 const getEventMeta = (request, response) => {
-  return respondJSONMeta(request, response, 200);
+  return respondJSONMeta(request, response, 204);
+};
+
+// returns all Events. 
+const getAll = (request, response) => {
+  const responseJSON = {
+    events,
+  };
+
+  respondJSON(request, response, 200, responseJSON);
 };
 
 // Adds an event with a date, binds the guest list to it. Change to allow for Head Requests
@@ -45,23 +53,75 @@ const addEvent = (request, response, body) => {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
+  if (body.name in events) {
+    responseJSON.message = 'Event already exists.';
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
 
-  const responseCode = 201;
-  responseJSON.message = 'Event created';
-  // For now, only create objects
+  const guestList = body.guestList.split(','); // Split the string of guestList into an array
+  const rsvpList = body.rsvp.split(','); // Split the string of guestList into an array
+  let newGuestArray = [];
+  let newrsvpArray = [];
+
+  for (let i = 0; i <= body.guestNum; i++) {
+    if(guestList[i] === ''){
+      continue;
+    }
+    newGuestArray.push(guestList[i]); // Push the array into the Events array
+    newrsvpArray.push(rsvpList[i]); // Push the array into the Events array
+  }
+  if(newGuestArray.length === 0)
+  {
+    responseJSON.message = 'You must have at least one guest.';
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  
+
+  //Create event object
   events[body.name] = {
     name: body.name,
     date: body.date,
     guests: [],
     rsvpd: [],
   };
+  responseJSON.message = 'Event created.';
+  responseCode = 201;
+  events[body.name].guests = newGuestArray; // Push the array into the Events array
+  events[body.name].rsvpd = newrsvpArray; // Push the array into the Events array
+  return respondJSON(request, response, responseCode, responseJSON);
+};
+
+// Updates existing event
+const updateEvent = (request, response, body) => {
+  const responseJSON = {
+    message: 'Event was not found',
+  };
+  if (!(body.name in events)) {
+    responseJSON.id = 'notFound';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
+  const responseCode = 204;
+  events[body.name].date = body.date;
+
   const guestList = body.guestList.split(','); // Split the string of guestList into an array
   const rsvpList = body.rsvp.split(','); // Split the string of guestList into an array
+  let newGuestArray = [];
+  let newrsvpArray = [];
   for (let i = 0; i <= body.guestNum; i++) {
-    events[body.name].guests.push(guestList[i]); // Push the array into the Events array
-    events[body.name].rsvpd.push(rsvpList[i]); // Push the array into the Events array
+    if(guestList[i] === ''){
+      continue;
+    }
+    newGuestArray.push(guestList[i]); // Push the array into the Events array
+    newrsvpArray.push(rsvpList[i]); // Push the array into the Events array
   }
-  return respondJSON(request, response, responseCode, responseJSON);
+
+  events[body.name].guests = newGuestArray;
+  events[body.name].rsvpd = newrsvpArray;
+  return respondJSONMeta(request, response, responseCode);
 };
 
 // For nonexistent Pages
@@ -83,6 +143,8 @@ const notRealMeta = (request, response) => {
 module.exports = {
   getEvent,
   addEvent,
+  getAll,
+  updateEvent,
   notReal,
   getEventMeta,
   notRealMeta

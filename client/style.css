@@ -4,20 +4,41 @@ html, body {
   margin: 0;
   padding: 0;
 }
-
+#banner {
+  text-align: center;
+}
 #top {
   text-align: center;
   margin: 0 auto;
 }
 
+#grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 5px solid black;
+  margin: 20px auto;
+  width: 66vw;
+  height: auto;
+  padding: 10px;
+  gap: 10px;
+  background-color: black;
+}
+
+#grid div{
+  background-color: cornflowerblue;
+  padding: 10px;
+}
 #top h1 {
   font-size: 2em;
 }
 
 #content {
-  margin-top: 100px;
   font-size: 2em;
   text-align: center;
+}
+
+#content table {
+  background-color: white;
 }
 
 table {

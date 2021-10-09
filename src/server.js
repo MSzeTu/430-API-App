@@ -7,26 +7,27 @@ const jsonHandler = require('./jsonResponses.js');
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const handlePost = (request, response, parsedUrl) => {
-  if (parsedUrl.pathname === '/addEvent') {
-    const body = [];
 
-    request.on('error', (err) => {
-      console.dir(err);
-      response.statusCode = 400;
-      response.end();
-    });
+  const body = [];
 
-    request.on('data', (chunk) => {
-      body.push(chunk);
-    });
+  request.on('error', (err) => {
+    response.statusCode = 400;
+    response.end();
+  });
 
-    request.on('end', () => {
-      const bodyString = Buffer.concat(body).toString();
-      const bodyParams = query.parse(bodyString);
+  request.on('data', (chunk) => {
+    body.push(chunk);
+  });
 
+  request.on('end', () => {
+    const bodyString = Buffer.concat(body).toString();
+    const bodyParams = query.parse(bodyString);
+    if (parsedUrl.pathname === '/addEvent') {
       jsonHandler.addEvent(request, response, bodyParams);
-    });
-  }
+    } else {
+      jsonHandler.updateEvent(request, response, bodyParams);
+    }
+  });
 };
 
 // Handles Get Functions
@@ -38,6 +39,8 @@ const handleGet = (request, response, parsedUrl) => {
     htmlHandler.getCSS(request, response);
   } else if (parsedUrl.pathname === '/getEvent') {
     jsonHandler.getEvent(request, response, params);
+  } else if (parsedUrl.pathname === '/getAll') {
+    jsonHandler.getAll(request, response);
   } else {
     jsonHandler.notReal(request, response);
   }

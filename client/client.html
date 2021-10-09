@@ -18,8 +18,7 @@
       let obj = '';
       switch (xhr.status) { //Act based on status code.
         case 200: //if success
-          obj = parseJSON(xhr, content)
-          console.log(obj);
+          obj = parseJSON(xhr)
           content.innerHTML = `<b>${obj.name} on ${obj.date}</b>`;
           genTable(obj.guests, obj.rsvpd);
           break;
@@ -33,11 +32,11 @@
           content.innerHTML = `<b>Event has been Created</b>`;
           break;
         case 204: //if already exists
-          content.innerHTML = `<b>Updated (No Content)</b>`;
+          content.innerHTML = `<b>Event Updated</b>`;
           parseResponse = false; //Do not parse this was a HEAD.
           break;
         case 400: //Bad request
-          obj = parseJSON(xhr, content)
+          obj = parseJSON(xhr)
           //Print json to console
           content.innerHTML = `<b>${obj.message}</b>`;
           break;
@@ -45,17 +44,10 @@
           content.innerHTML = `<b>Page Not Found</b>`;
           break;
       }
-
-      /*if (parseResponse) { //Only Parse non-Heads
-        const obj = parseJSON(xhr, content)
-        //Print json to console
-        console.dir(obj);
-        content.innerHTML = obj.message;
-      } */
     };
 
     //Parses the JSON when called
-    const parseJSON = (xhr, content) => {
+    const parseJSON = (xhr) => {
       const obj = JSON.parse(xhr.response);
 
       return obj;
@@ -93,7 +85,7 @@
     }
 
     //Function for Post Requests
-    const sendPost = (e, nameForm, guests, guestList) => {
+    const sendPost = (e, nameForm, guests, guestList, update) => {
       //Set up the guestList
       for (let i = 0; i <= guests; i++) {
         let value = document.querySelector('#nameForm').querySelector(`#guest${i}`).value;
@@ -103,17 +95,28 @@
         rsvpList.push(rsvpValue);
       }
 
-      const nameAction = nameForm.getAttribute('action');
+      let nameAction = '';
+      let nameField = '';
+
+      if (update) {
+        nameAction = '/updateEvent';
+        nameField = document.querySelector('#eventField');
+        console.log("hello");
+      } else {
+        nameAction = nameForm.getAttribute('action');
+        nameField = nameForm.querySelector('#nameField');
+      }
+
       const nameMethod = nameForm.getAttribute('method');
 
 
-      const nameField = nameForm.querySelector('#nameField');
+
       const dateField = nameForm.querySelector('#dateField');
 
       //Create Ajax request
       const xhr = new XMLHttpRequest();
 
-      //Sets ethod and url
+      //Sets method and url
       xhr.open(nameMethod, nameAction);
 
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -123,7 +126,6 @@
 
 
       const formData = `name=${nameField.value}&date=${dateField.value}&guestNum=${guests}&guestList=${guestList}&rsvp=${rsvpList}`;
-      console.log(formData);
       xhr.send(formData);
 
       guestList.splice(0, guestList.length);
@@ -133,6 +135,34 @@
       return false; //Prevents page change
     };
 
+    //Gets all events from the server and populates the dropdown
+    const initGet = () => {
+      let url = '/getAll';
+
+      const method = 'GET';
+
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.setRequestHeader('Accept', 'application.json');
+
+      xhr.onload = () => populateMenu(xhr);
+
+      xhr.send();
+
+      return false;
+    };
+
+    //Populates the dropdown using the received data
+    const populateMenu = (xhr) => {
+      let obj = parseJSON(xhr)
+      console.log(obj);
+      let events = document.querySelector('#eventField');
+      Object.keys(obj.events).forEach(key=>{
+        let option = document.createElement('OPTION');
+        option.innerHTML = key;
+        events.options.add(option);
+      });
+    };
 
     const add = () => { //Adds a guest input slot
       guests++;
@@ -183,13 +213,13 @@
 
       //Create the label cells
       let row = document.createElement('tr');
-      let cell = document.createElement('td');
+      let cell = document.createElement('th');
       let cellText = document.createElement('b');
       cellText.innerHTML = 'Guests';
       cell.appendChild(cellText);
       row.appendChild(cell);
 
-      cell = document.createElement('td');
+      cell = document.createElement('th');
       cellText = document.createElement('b');
       cellText.innerHTML = `RSVP'd`;
       cell.appendChild(cellText);
@@ -225,9 +255,9 @@
     const init = () => { //Initializes the page
       const nameForm = document.querySelector('#nameForm');
 
-      //Create handler for addEvent
-      const addEvent = (e) => sendPost(e, nameForm, guests, guestList);
-
+      //Create handler for addEvent and updateEvent
+      const addEvent = (e) => sendPost(e, nameForm, guests, guestList, false);
+      const updateEvent = (e) => sendPost(e, nameForm, guests, guestList, true);
 
       //Sets up the button functionality
       const addButton = document.querySelector('#addButton');
@@ -242,41 +272,67 @@
       const eventForm = document.querySelector('#eventForm');
       const getEvent = (e) => getRequest(e, eventForm);
       eventForm.addEventListener('submit', getEvent);
+
+      //Add Update to the button
+      const btn = eventForm.querySelector('#updateBtn');
+      btn.addEventListener('click', updateEvent);
+
+      //Populate the menu 
+      initGet();
     }
+
     window.onload = init;
   </script>
 </head>
 
-<body>
-  <section id="top">
-    <h3>Event and Guest Tracker</h3>
-    <form id="nameForm" action="/addEvent" method="post">
-      <label for="eventName">Event Name: </label>
-      <input id="nameField" type="text" name="eventName" />
-      <label for="eventDate">Event Date: </label>
-      <input id="dateField" type="date" name="date" />
-      <input type="submit" value="Add Event" />
-      <br>
-      <label for="guests">Guests:</label>
-      &emsp;&emsp;&emsp;
-      <label for="rsvp">RSVP'd?:</label>
-      <br>
-      <input type="text" name="guest0" id="guest0">
-      <input type="checkbox" name="rsvp0" id="rsvp0">
-    </form>
-    <button id="addButton">Add Guest</button>
-    <button id="removeButton">Remove Guest</button>
 
-    <h3>Retrieve Events Here</h3>
-    <form id="eventForm" action="/getEvent" method="get">
-      <select id='eventField'>
-        <option value='/getEvent'>Event Name</option>
-      </select>
-      <input type="submit" value="Get Event" />
-    </form>
-  </section>
-  <section id="content">
-  </section>
+
+
+<!-- HTML from here on-->
+
+<body>
+  <header>
+    <div id="banner">
+      <h1>Event and Guest Tracker</h1>
+    </div>
+  </header>
+  <main>
+    <div id="grid">
+      <div>
+        <section id="top">
+          <form id="nameForm" action="/addEvent" method="post">
+            <label for="eventName">Event Name: </label>
+            <input id="nameField" type="text" name="eventName" />
+            <label for="eventDate">Event Date: </label>
+            <input id="dateField" type="date" name="date" />
+            <input type="submit" value="Add Event" />
+            <br>
+            <label for="guests">Guests:</label>
+            &emsp;&emsp;&emsp;
+            <label for="rsvp">RSVP'd?:</label>
+            <br>
+            <input type="text" name="guest0" id="guest0">
+            <input type="checkbox" name="rsvp0" id="rsvp0">
+          </form>
+          <button id="addButton">Add Guest</button>
+          <button id="removeButton">Remove Guest</button>
+
+          <h3>Retrieve Events Here</h3>
+          <form id="eventForm" action="/getEvent" method="get">
+            <select id='eventField'>
+              <option value='/getEvent'>Event Name</option>
+            </select>
+            <input type="submit" value="Get Event" />
+            <button type="button" id="updateBtn">Update Event</button>
+          </form>
+        </section>
+      </div>
+      <div id="content">
+
+      </div>
+    </div>
+  </main>
+
 </body>
 
 </html>
