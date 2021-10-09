@@ -9,7 +9,7 @@ const handleResponse = (xhr, parseResponse) => {
   switch (xhr.status) { //Act based on status code.
     case 200: //if success
       obj = parseJSON(xhr)
-      content.innerHTML = `<b>${obj.name} on ${obj.date}</b>`;
+      content.innerHTML = `<b>Displaying ${obj.name} on ${obj.date}</b>`;
       genTable(obj.guests, obj.rsvpd);
       break;
     case 201: //if created, add it to the list
