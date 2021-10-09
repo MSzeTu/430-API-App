@@ -38,6 +38,8 @@ const handleGet = (request, response, parsedUrl) => {
     htmlHandler.getCSS(request, response);
   } else if (parsedUrl.pathname === '/client.js') {
     htmlHandler.getJS(request, response);
+  } else if (parsedUrl.pathname === '/qrious.js') {
+    htmlHandler.getQrious(request, response);
   } else if (parsedUrl.pathname === '/getEvent') {
     jsonHandler.getEvent(request, response, params);
   } else if (parsedUrl.pathname === '/getAll') {

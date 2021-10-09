@@ -3,6 +3,7 @@ const fs = require('fs'); // Pull in file system module
 const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const css = fs.readFileSync(`${__dirname}/../client/style.css`);
 const js = fs.readFileSync(`${__dirname}/../client/client.js`);
+const qrious = fs.readFileSync(`${__dirname}/../client/qrious.js`);
 
 const getIndex = (request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/html' });
@@ -22,8 +23,15 @@ const getJS = (request, response) => {
   response.end();
 };
 
+const getQrious = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/javascript' });
+  response.write(qrious);
+  response.end();
+};
+
 module.exports = {
   getIndex,
   getCSS,
   getJS,
+  getQrious,
 };

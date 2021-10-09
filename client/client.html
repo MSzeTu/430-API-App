@@ -6,13 +6,10 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script type="text/javascript" src="https://github.com/niklasvh/html2canvas/releases/download/0.5.0-alpha1/html2canvas.js"></script>
   <script src = /client.js></script>
+  <script src= /qrious.js></script>
 </head>
-
-
-
-
-<!-- HTML from here on-->
 
 <body>
   <header>
@@ -54,11 +51,13 @@
       </div>
       <div id="content">
 
+        <canvas id="qr"></canvas>
       </div>
       <div id="status">
         <b>Status: </b><span id="currentStatus"></span>
       </div>
     </div>
+    
   </main>
 
 </body>
@@ -68,5 +67,9 @@
 <!--References https://stackoverflow.com/questions/6394473/variable-number-of-input-fields-in-form
 
 https://stackoverflow.com/questions/38795210/how-to-create-a-form-with-a-variable-number-of-inputs
+
+https://github.com/neocotic/qrious
+
+https://html2canvas.hertzen.com/getting-started  https://stackoverflow.com/questions/53757970/downloading-data-tables-from-html-as-image/53758301
 
 -->
