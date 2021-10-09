@@ -10,11 +10,13 @@ html, body {
 #top {
   text-align: center;
   margin: 0 auto;
+  font-size: 20px;
 }
 
 #grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr fit-content();
   border: 5px solid black;
   margin: 20px auto;
   width: 66vw;
@@ -28,6 +30,13 @@ html, body {
   background-color: cornflowerblue;
   padding: 10px;
 }
+
+#status {
+  grid-column: 1 / 3;
+  text-align: left;
+  font-size: 30px;
+}
+
 #top h1 {
   font-size: 2em;
 }
@@ -37,11 +46,18 @@ html, body {
   text-align: center;
 }
 
-#content table {
-  background-color: white;
+#content th {
+  color: white;
+  background-color: blue;
+}
+
+#content th, td {
+  padding: 8px;
 }
 
 table {
   margin-right: auto;
   margin-left: auto;
+  background-color: white;
+  border-collapse: collapse;
 }

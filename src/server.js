@@ -36,6 +36,8 @@ const handleGet = (request, response, parsedUrl) => {
     htmlHandler.getIndex(request, response);
   } else if (parsedUrl.pathname === '/style.css') {
     htmlHandler.getCSS(request, response);
+  } else if (parsedUrl.pathname === '/client.js') {
+    htmlHandler.getJS(request, response);
   } else if (parsedUrl.pathname === '/getEvent') {
     jsonHandler.getEvent(request, response, params);
   } else if (parsedUrl.pathname === '/getAll') {
@@ -47,7 +49,7 @@ const handleGet = (request, response, parsedUrl) => {
 
 // Handles Head Functions
 const handleHead = (request, response, parsedUrl) => {
-  if (parsedUrl.pathname === '/getEvent') {
+  if (parsedUrl.pathname === '/getEvent' || parsedUrl.pathname === '/getAll') {
     jsonHandler.getEventMeta(request, response);
   } else {
     jsonHandler.notRealMeta(request, response);

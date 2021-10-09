@@ -111,6 +111,12 @@ const updateEvent = (request, response, body) => {
     }
   }
 
+  if (newGuestArray.length === 0) {
+    responseJSON.message = 'You must have at least one guest.';
+    responseJSON.id = 'missingParams';
+    return respondJSON(request, response, 400, responseJSON);
+  }
+
   events[body.name].guests = newGuestArray;
   events[body.name].rsvpd = newrsvpArray;
   return respondJSONMeta(request, response, responseCode);
