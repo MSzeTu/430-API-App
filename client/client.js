@@ -1,6 +1,6 @@
-let guests = 0; //Variable to track the number of guests
-let guestList = [];
-let rsvpList = [];
+let guests; //Variable to track the number of guests
+let guestList;
+let rsvpList;
 
 //Handles requests
 const handleResponse = (xhr, parseResponse) => {
@@ -11,6 +11,7 @@ const handleResponse = (xhr, parseResponse) => {
       obj = parseJSON(xhr)
       content.innerHTML = `<b>Displaying ${obj.name} on ${obj.date}</b>`;
       genTable(obj.guests, obj.rsvpd);
+      genInput(obj.guests, obj.rsvpd, obj.date);
       break;
     case 201: //if created, add it to the list
       //Add the event to the list of existing events
@@ -177,7 +178,7 @@ const remove = () => { //Removes a guest input slot
 
   let nameForm = document.querySelector("#nameForm");
 
-  let breaks = document.getElementsByTagName("br");
+  let breaks = nameForm.getElementsByTagName("br");
   nameForm.removeChild(breaks[breaks.length - 1]);
 
   let removeNode = nameForm.querySelector(`#guest${guests}`);
@@ -190,8 +191,36 @@ const remove = () => { //Removes a guest input slot
 
 }
 
+
+//Fills the input section with the guest data such that updating is easy
+const genInput = (guestVar, rsvpd, dateVar) => {
+  //Set the date
+  let dateField = nameForm.querySelector('#dateField');
+  dateField.value = dateVar;
+  //Reset the current input slots
+  for (let i = guests; i > 0; i--) {
+    remove();
+  }
+  let eventGuests = guestVar.length;
+  let cNode = document.querySelector('#guest0');
+  cNode.value = guestVar[0];
+  let cNodeR = document.querySelector('#rsvp0');
+  if (rsvpd[0] === 'true') {
+    cNodeR.checked = true;
+  }
+  for (let i = 1; i < eventGuests; i++) {
+    add();
+    cNode = document.querySelector(`#guest${i}`);
+    cNode.value = guestVar[i];
+    cNodeR = document.querySelector(`#rsvp${i}`);
+    if (rsvpd[i] === 'true') {
+      cNodeR.checked = true;
+    }
+  }
+}
+
 //Makes an event Table and puts it in content
-const genTable = (guests, rsvpd) => {
+const genTable = (guestVar, rsvpd) => {
   let body = document.querySelector('#content');
   //Create a table element and tbody element
   let tbl = document.createElement("table");
@@ -214,10 +243,10 @@ const genTable = (guests, rsvpd) => {
 
   tblBody.appendChild(row);
   //Populate the rest of the cells
-  for (let i = 0; i < guests.length; i++) {
+  for (let i = 0; i < guestVar.length; i++) {
     row = document.createElement('tr');
     cell = document.createElement('td');
-    cellText = document.createTextNode(guests[i]);
+    cellText = document.createTextNode(guestVar[i]);
     cell.appendChild(cellText);
     row.appendChild(cell);
 
@@ -260,6 +289,11 @@ const convertToImage = (tbl, body) => {
 }
 
 const init = () => { //Initializes the page
+
+  //Initialize Variables
+  guests = 0;
+  guestList = [];
+  rsvpList = [];
   const nameForm = document.querySelector('#nameForm');
 
   //Create handler for addEvent and updateEvent
